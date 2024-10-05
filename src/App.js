@@ -1,13 +1,12 @@
 // 降順にしてから適当な箇所に戻って、プレイを続けると行列表示がおかしくなってる
-// 勝者の3個だけではなくすべてが赤色になってしまう
 
 import { useState } from "react";
 
-function Square({ value, onSquareClick, winner }) {
+function Square({ value, onSquareClick, index, a, b, c }) {
     return (
         <button
             className="square"
-            style={{ color: value === winner ? 'red' : 'black' }}
+            style={{ color: [a, b, c].includes(index) ? 'red' : 'black' }}
             onClick={onSquareClick}
         >
             {value}
@@ -17,7 +16,7 @@ function Square({ value, onSquareClick, winner }) {
 
 function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, indexes, setIndexes }) {
     function handleClick(i, row, col) {
-        if (calculateWinner(squares) || squares[i]) {
+        if (!calculateWinner(squares)[0] === null || squares[i]) {
             return;
         }
         const nextSquares = squares.slice();
@@ -39,7 +38,7 @@ function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, inde
         setIndexes(newIndexes);
     }
 
-    const winner = calculateWinner(squares);
+    const [winner] = calculateWinner(squares);
     let status;
     if (winner) {
         status = "Winner: " + winner;
@@ -50,6 +49,8 @@ function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, inde
             status = "Next player: " + (xIsNext ? "X" : "O");
         }
     }
+
+    const [, a, b, c] = calculateWinner(squares);
 
     return (
         <>
@@ -65,6 +66,8 @@ function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, inde
                                 value={squares[index]}
                                 onSquareClick={() => handleClick(index, row, col)}
                                 winner={winner}
+                                index={index}
+                                a={a} b={b} c={c}
                             />
                         );
                     })}
@@ -153,8 +156,8 @@ function calculateWinner(squares) {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return [squares[a], a, b, c];
         }
     }
-    return null;
+    return [null];
 }
