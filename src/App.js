@@ -1,13 +1,15 @@
-// 3まで終わった状態
-
 import { useState } from "react";
 
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, winner }) {
     return (
-        <button className="square" onClick={onSquareClick}>
+        <button
+            className="square"
+            style={{ color: value === winner ? 'red' : 'black' }}
+            onClick={onSquareClick}
+        >
             {value}
         </button>
-    );
+    )
 }
 
 function Board({ xIsNext, squares, onPlay }) {
@@ -29,7 +31,11 @@ function Board({ xIsNext, squares, onPlay }) {
     if (winner) {
         status = "Winner: " + winner;
     } else {
-        status = "Next player: " + (xIsNext ? "X" : "O");
+        if (!squares.includes(null)) {
+            status = 'Draw!';
+        } else {
+            status = "Next player: " + (xIsNext ? "X" : "O");
+        }
     }
 
     return (
@@ -45,6 +51,7 @@ function Board({ xIsNext, squares, onPlay }) {
                                 key={index}
                                 value={squares[index]}
                                 onSquareClick={() => handleClick(index)}
+                                winner={winner}
                             />
                         );
                     })}
