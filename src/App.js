@@ -86,7 +86,7 @@ export default function Game() {
         } else {
             return (
                 <li key={move}>
-                    <button onClick={(move) => setCurrentMove(move)}>{description}</button>
+                    <button onClick={() => setCurrentMove(move)}>{description}</button>
                 </li>
             );
         }
