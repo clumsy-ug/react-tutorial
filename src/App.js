@@ -1,6 +1,5 @@
-// 降順にしてから適当に戻って、またどこかクリックすると行列表示がおかしくなってる
+// 降順にしてから適当な箇所に戻って、プレイを続けると行列表示がおかしくなってる
 // 勝者の3個だけではなくすべてが赤色になってしまう
-
 
 import { useState } from "react";
 
@@ -133,6 +132,7 @@ export default function Game() {
                 <button style={{ marginLeft: "30px" }} onClick={() => setIsAcsending(!isAcsending)}>
                     {isAcsending ? "降順で並べ替え" : "昇順で並べ替え"}
                 </button>
+                <button onClick={() => window.location.reload()} style={{ marginInline: '5px' }}>ブラウザ再読み込み</button>
                 <ol>{moves}</ol>
             </div>
         </div>
