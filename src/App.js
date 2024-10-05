@@ -64,16 +64,8 @@ export default function Game() {
         setHistory(nextHistory);
         setCurrentMove(nextHistory.length - 1);
     }
-
-    function jumpTo(nextMove) {
-        setCurrentMove(nextMove);
-    }
-
-    function handleReverse() {
-        setIsAcsending(!isAcsending);
-    }
-
-    let moves = history.map((squares, move) => {
+    
+    let moves = history.map((_, move) => {
         let description;
         if (move > 0) {
             if (move === currentMove) {
@@ -94,7 +86,7 @@ export default function Game() {
         } else {
             return (
                 <li key={move}>
-                    <button onClick={() => jumpTo(move)}>{description}</button>
+                    <button onClick={(move) => setCurrentMove(move)}>{description}</button>
                 </li>
             );
         }
@@ -108,7 +100,7 @@ export default function Game() {
                 <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
             </div>
             <div className="game-info">
-                <button style={{ marginLeft: "30px" }} onClick={handleReverse}>
+                <button style={{ marginLeft: "30px" }} onClick={() => setIsAcsending(!isAcsending)}>
                     {isAcsending ? "降順で並べ替え" : "昇順で並べ替え"}
                 </button>
                 <ol>{moves}</ol>
