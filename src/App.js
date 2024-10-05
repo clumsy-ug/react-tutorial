@@ -1,3 +1,5 @@
+// 3まで終わった状態
+
 import { useState } from "react";
 
 function Square({ value, onSquareClick }) {
