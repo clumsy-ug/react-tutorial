@@ -1,5 +1,3 @@
-// 降順にしてから適当な箇所に戻って、プレイを続けると行列表示がおかしくなってる
-
 import { useState } from "react";
 
 function Square({ value, onSquareClick, index, a, b, c }) {
@@ -16,15 +14,11 @@ function Square({ value, onSquareClick, index, a, b, c }) {
 
 function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, indexes, setIndexes }) {
     function handleClick(i, row, col) {
-        if (!calculateWinner(squares)[0] === null || squares[i]) {
+        if (calculateWinner(squares)[0] || squares[i]) {
             return;
         }
         const nextSquares = squares.slice();
-        if (xIsNext) {
-            nextSquares[i] = "X";
-        } else {
-            nextSquares[i] = "O";
-        }
+        nextSquares[i] = xIsNext ? 'X' : 'O';
         onPlay(nextSquares);
         
         // 既存プロパティを直接変更する(mutable)必要がある？ので、参照を共有しないようにshallow copyではなくdeep copyする
@@ -82,7 +76,7 @@ export default function Game() {
     const [currentMove, setCurrentMove] = useState(0);
     const currentSquares = history[currentMove];
     const xIsNext = currentMove % 2 === 0;
-    const [isAcsending, setIsAcsending] = useState(true);
+    const [isAscending, setIsAscending] = useState(true);
     const [rowColHistory, setRowColHistory] = useState(Array.from({ length: 9 }, () => ({ row: null, col: null })));
     const [indexes, setIndexes] = useState([null]);
 
@@ -116,7 +110,7 @@ export default function Game() {
         )
     });
 
-    if (!isAcsending) moves.reverse();
+    if (!isAscending) moves.reverse();
 
     return (
         <div className="game">
@@ -132,10 +126,9 @@ export default function Game() {
                 />
             </div>
             <div className="game-info">
-                <button style={{ marginLeft: "30px" }} onClick={() => setIsAcsending(!isAcsending)}>
-                    {isAcsending ? "降順で並べ替え" : "昇順で並べ替え"}
+                <button style={{ marginLeft: "30px" }} onClick={() => setIsAscending(!isAscending)}>
+                    {isAscending ? "降順で並べ替え" : "昇順で並べ替え"}
                 </button>
-                <button onClick={() => window.location.reload()} style={{ marginInline: '5px' }}>ブラウザ再読み込み</button>
                 <ol>{moves}</ol>
             </div>
         </div>
