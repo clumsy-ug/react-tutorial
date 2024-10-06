@@ -12,22 +12,21 @@ function Square({ value, onSquareClick, index, a, b, c }) {
     )
 }
 
-function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, indexes, setIndexes }) {
+function Board({ xIsNext, squares, onPlay, rowColHistory, setRowColHistory, indexes, setIndexes, currentMove }) {
     function handleClick(i, row, col) {
-        if (calculateWinner(squares)[0] || squares[i]) {
+        if (calculateWinner(squares)[0] || squares[i]) { // 既に勝者がいるor既にそのマスが埋まっている場合
             return;
         }
+
         const nextSquares = squares.slice();
         nextSquares[i] = xIsNext ? 'X' : 'O';
         onPlay(nextSquares);
         
-        // 既存プロパティを直接変更する(mutable)必要がある？ので、参照を共有しないようにshallow copyではなくdeep copyする
-        const newRowColHistory = JSON.parse(JSON.stringify(rowColHistory));
-        newRowColHistory[i].row = row;
-        newRowColHistory[i].col = col;
+        const newRowColHistory = rowColHistory.slice(0, currentMove + 1);
+        newRowColHistory.push({ row, col });
         setRowColHistory(newRowColHistory)
-        console.log(`今押されたのは${row}行${col}列です`);
-        const newIndexes = [ ...indexes ];
+        // console.log(`今押されたのは${row}行${col}列です`);
+        const newIndexes = indexes.slice(0, currentMove + 1);
         newIndexes.push(i);
         setIndexes(newIndexes);
     }
@@ -77,11 +76,12 @@ export default function Game() {
     const currentSquares = history[currentMove];
     const xIsNext = currentMove % 2 === 0;
     const [isAscending, setIsAscending] = useState(true);
-    const [rowColHistory, setRowColHistory] = useState(Array.from({ length: 9 }, () => ({ row: null, col: null })));
+    const [rowColHistory, setRowColHistory] = useState([{}]);
     const [indexes, setIndexes] = useState([null]);
 
     function handlePlay(nextSquares) {
-        const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+        const copyHistory = history.slice(0, currentMove + 1);
+        const nextHistory = [...copyHistory, nextSquares];
         setHistory(nextHistory);
         setCurrentMove(nextHistory.length - 1);
     }
@@ -89,11 +89,11 @@ export default function Game() {
     let moves = history.map((_, move) => {
         let description;
         if (move > 0) {
-            const index = indexes[move];
+            // console.log('rowColHistoryは', rowColHistory);
             if (move === currentMove) {
-                description = `You are at move #${move} / (${rowColHistory[index].row},${rowColHistory[index].col})`;
+                description = `You are at move #${currentMove} / (${rowColHistory[move].row},${rowColHistory[move].col})`;
             } else {
-                description = `Go to move #${move} / (${rowColHistory[index].row},${rowColHistory[index].col})`;
+                description = `Go to move #${move} / (${rowColHistory[move].row},${rowColHistory[move].col})`;
             }
         } else {
             description = "Go to game start";
@@ -123,6 +123,7 @@ export default function Game() {
                     setRowColHistory={setRowColHistory}
                     indexes={indexes}
                     setIndexes={setIndexes}
+                    currentMove={currentMove}
                 />
             </div>
             <div className="game-info">
